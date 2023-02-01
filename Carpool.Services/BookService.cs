@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Carpool.Models;
+using Carpool.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,11 @@ using System.Threading.Tasks;
 
 namespace Carpool.Services
 {
-    internal class BookService
+    public class BookService : IBookService
     {
+        public List<Offers> GetAvailableRide(string from, string to)
+        {
+            
+        }
     }
 }

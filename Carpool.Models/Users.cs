@@ -5,7 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Carpool.Models
-{
+{ 
+
+    public class UserMapping
+    {
+        public List<Users> Users { get; set; }
+    }
     public class Users
     {
         public int Id { get; set; }
@@ -24,4 +29,5 @@ namespace Carpool.Models
 
         public int Seat { get; set;}
     }
+
 }

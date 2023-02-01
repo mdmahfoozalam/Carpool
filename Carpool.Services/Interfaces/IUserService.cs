@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Carpool.Services.Interfaces
 {
-    internal interface IUserService
+    public interface IUserService
     {
-        public List<Users> GetUsers();
+        public UserMapping GetUsers();
    
     }
 }
