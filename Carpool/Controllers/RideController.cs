@@ -4,11 +4,13 @@ using Carpool.Services.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
 using Carpool.Models.Ride;
 using Carpool.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Carpool.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RideController 
     {
         private readonly IRideService _offerService;
@@ -24,21 +26,21 @@ namespace Carpool.Controllers
             return _offerService.GetAllRides();
         }
 
-        [HttpGet("getOfferedRide/{userId}")]
-        public IEnumerable<RideDetails> GetRides(int userId)
+        [HttpGet("getOfferedRide")]
+        public IEnumerable<RideResponse> GetRides(int userId)
         {
             return _offerService.GetRides(userId);
         }
 
-        [HttpPut("updateRide")]
-        public string UpdateRide(RideDetails rideDetails)
-        {
-            return _offerService.UpdateRide(rideDetails);
-        }
+        //[HttpPut("updateRide")]
+        //public string UpdateRide(RideDetails rideDetails)
+        //{
+        //    return _offerService.UpdateRide(rideDetails);
+        //}
 
 
         [HttpPost("addRide")]
-        public string AddRide(RideDetails rideDetails)
+        public object AddRide(RideDetails rideDetails)
         {
             return _offerService.AddRide(rideDetails);
         }
@@ -50,12 +52,12 @@ namespace Carpool.Controllers
             return _offerService.GetAvailableRides(rideRequest, pricePerKm);
         }
 
+        [HttpGet("getAllLocations")]
+        public IEnumerable<Locations> GetAllLocations()
+        {
+            return _offerService.GetLocations();
+        }
 
-        //[HttpPatch("updatePartial/{offerId}")]
-        //public string UpdateOfferPartial([FromRoute] int offerId, [FromBody] JsonPatchDocument updateOfferModel)
-        //{
-        //    return _offerService.UpdateOfferPartial(offerId, updateOfferModel);
-        //}
 
     }
 }

@@ -12,13 +12,14 @@ namespace Carpool.Services.Interfaces
     {
         public IEnumerable<RideDetails> GetAllRides();
 
-        public IEnumerable<RideDetails> GetRides(int userId);
-        public string UpdateRide(RideDetails rideDetails);
+        public IEnumerable<Locations> GetLocations();
+        public IEnumerable<RideResponse> GetRides(int userId);
+       // public string UpdateRide(RideDetails rideDetails);
 
         //public string UpdateOfferPartial(int offerId, JsonPatchDocument updateOfferModel);
 
         public IEnumerable<RideResponse> GetAvailableRides(RideRequest rideRequestModel, int pricePerKm);
 
-        public string AddRide(RideDetails rideDetails);
+        public object AddRide(RideDetails rideDetails);
     }
 }

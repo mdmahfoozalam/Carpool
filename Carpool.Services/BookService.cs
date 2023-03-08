@@ -21,20 +21,20 @@ namespace Carpool.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<BookingDetails> BookedRide(int userId)
+        public IEnumerable<Bookings> GetBookedRide(int userId)
         {
-            var response = _context.Booking.Where(f => f.UserId == userId).ToList();
-            return _mapper.Map<List<BookingDetails>>(response);
-        }
+            var response = _context.Bookings.Where(f => f.UserId == userId).ToList();
+            return response;
+        }   
 
         public string BookRide(int rideId, int userId )
         {
             try
             {
-                var user = _context.Ride.Where(f => f.RideId == rideId).FirstOrDefault();
-                if(user != null)
+                var ride = _context.Ride.FirstOrDefault(f => f.RideId == rideId);
+                if(ride != null)
                 {
-                    var vehicle = _context.Vehicle.Where(u => u.UserId == user.UserId).FirstOrDefault();
+                    var vehicle = _context.Vehicle.Where(u => u.UserId == ride.UserId).FirstOrDefault();
                     if (vehicle != null)
                     {
                         if (vehicle.Seats > 0)
@@ -44,19 +44,30 @@ namespace Carpool.Services
                         }
                         if (vehicle.Seats == 0)
                         {
-                            user.IsBooked = true;
+                            ride.IsBooked = true;
                         }
                     }
 
-                    _context.Booking.Add(new Booking()
+                    //_context.Booking.Add(new Booking()
+                    //{
+                    //    UserId = userId,
+                    //    RideId = user.RideId,
+                    //    SourceId = user.SourceId,
+                    //    DestinationId = user.DestinationId,
+                    //    Date = user.Date,
+                    //    Time = user.Time
+
+                    //});
+                    _context.Bookings.Add(new Bookings()
                     {
                         UserId = userId,
-                        RideId = user.RideId,
-                        SourceId = user.SourceId,
-                        DestinationId = user.DestinationId,
-                        Date = user.Date,
-                        Time = user.Time
-
+                        RideId = ride.RideId,
+                        Source = _context.Location.FirstOrDefault(x => x.Id == ride.SourceId)?.Name,
+                        Destination = _context.Location.FirstOrDefault(x => x.Id == ride.DestinationId)?.Name,
+                        Date= ride.Date,
+                        Time = ride.Time,
+                        Price = ride.Distance,
+                        Seats =vehicle.Seats
                     });
                     _context.SaveChanges();
                     return "Ride booked";
