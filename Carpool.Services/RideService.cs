@@ -28,7 +28,7 @@ namespace Carpool.Services
         {
             try
             {
-                return _mapper.Map<List<RideDetails>>(_context.Ride.ToList());
+                return _mapper.Map<IEnumerable<RideDetails>>(_context.Ride);
             }
 
             catch (Exception ex)
@@ -38,40 +38,36 @@ namespace Carpool.Services
 
         }
 
-        public string AddRide(RideDetails rideDetails)
+        public object AddRide(RideDetails rideDetails)
         {
             try
             {
-                var ride = _context.Ride.Where(f =>f.UserId == rideDetails.UserId && f.SourceId == rideDetails.SourceId
-                                                && f.DestinationId == rideDetails.DestinationId && f.Date == rideDetails.Date
-                                                && f.Time == rideDetails.Time && f.Distance == rideDetails.Distance).ToList();
-                if(ride == null)
-                {
+
+                var sourceId = _context.Location.Where(x => x.Name == rideDetails.Source).Select(x => x.Id).FirstOrDefault();
+                var destinationId = _context.Location.Where(x => x.Name == rideDetails.Destination).Select(x => x.Id).FirstOrDefault();
+                //var ride = _context.Ride.Where(f =>f.UserId == rideDetails.UserId && f.SourceId == rideDetails.SourceId
+                //                                && f.DestinationId == rideDetails.DestinationId && f.Date == rideDetails.Date
+                //                                && f.Time == rideDetails.Time && f.Distance == rideDetails.Distance).ToList();
+              
                     _context.Ride.Add(new Ride()
                     {
                         UserId = rideDetails.UserId,
-                        SourceId = rideDetails.SourceId,
-                        DestinationId = rideDetails.DestinationId,
+                        SourceId = sourceId,
+                        DestinationId = destinationId,
                         Date = rideDetails.Date,
                         Time = rideDetails.Time,
-                        IsBooked = rideDetails.IsBooked,
-                        Distance = rideDetails.Distance
-                    });
+                        IsBooked = false,
+                        Distance =Math.Abs(destinationId - sourceId) * 2
+                    });;
                     _context.SaveChanges();
 
-                    return "Ride Added";
-                }
+                    return new {message ="Ride added" };
 
-                else
-                {
-                    return "Ride already exists";
-                }
-                
             }
 
             catch (Exception ex)
             {
-                return ex.Message;
+                return new RideDetails();
             }
             
         }
@@ -187,53 +183,74 @@ namespace Carpool.Services
             }
         }
 
-        public string UpdateRide(RideDetails rideDetails)
+        //public string UpdateRide(RideDetails rideDetails)
+        //{
+        //    try
+        //    {
+        //        var update = _context.Ride.Where(f => f.RideId == rideDetails.RideId).FirstOrDefault();
+        //        if (update != null)
+        //        {
+        //            update.SourceId = rideDetails.SourceId;
+        //            update.DestinationId = rideDetails.DestinationId;
+        //            update.Date = rideDetails.Date;
+        //            update.Time = rideDetails.Time;
+        //            update.IsBooked = rideDetails.IsBooked;
+        //            update.Distance = rideDetails.Distance;
+        //            _context.SaveChanges();
+        //            return "offer updated";
+        //        }
+        //        else
+        //        {
+        //            return "No ride to update";
+        //        }
+                
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message;
+        //    }
+        //}
+
+        public IEnumerable<RideResponse> GetRides(int userId)
         {
             try
             {
-                var update = _context.Ride.Where(f => f.RideId == rideDetails.RideId).FirstOrDefault();
-                if (update != null)
+                var res = new List<RideResponse>();
+                //return  _mapper.Map<List<RideDetails>>(_context.Ride.Where(_ => _.UserId == userId).ToList());
+                var ridesWithId =_context.Ride.Where(_ => _.UserId == userId).ToList();
+                foreach(var rides in ridesWithId)
                 {
-                    update.SourceId = rideDetails.SourceId;
-                    update.DestinationId = rideDetails.DestinationId;
-                    update.Date = rideDetails.Date;
-                    update.Time = rideDetails.Time;
-                    update.IsBooked = rideDetails.IsBooked;
-                    update.Distance = rideDetails.Distance;
-                    _context.SaveChanges();
-                    return "offer updated";
+                    res.Add(new RideResponse()
+                    {
+                        Name = _context.User.Where(_ => _.UserId==rides.UserId)?.Select(x => x.Name).FirstOrDefault(),
+                        RideId=rides.RideId,
+                        Source = _context.Location.Where(s => s.Id == rides.SourceId)?.Select(x => x.Name).FirstOrDefault(),
+                        Destination = _context.Location.Where(s => s.Id == rides.DestinationId)?.Select(x => x.Name).FirstOrDefault(),
+                        Date = rides.Date,
+                        Time = rides.Time,
+                        Price = rides.Distance,
+                        SeatAvailable = _context.Vehicle.Where(s => s.UserId== userId).Select(x => x.Seats).FirstOrDefault(),
+                    });
                 }
-                else
-                {
-                    return "No ride to update";
-                }
-                
+
+                return res;
             }
+
             catch (Exception ex)
             {
-                return ex.Message;
+                return new List<RideResponse>();
             }
         }
 
-        public IEnumerable<RideDetails> GetRides(int userId)
+        public IEnumerable<Locations> GetLocations()
         {
             try
             {
-                return  _mapper.Map<List<RideDetails>>(_context.Ride.Where(_ => _.UserId == userId).ToList());
-                
-                //var result = _context.Ride.Where(_ => _.UserId == userId).ToList();
-
-                //result.ForEach(r =>
-                //{
-                //    _context.Location.SingleOrDefault(_ => _.Id == r.SourceId);
-                    
-                //})
-                //var sourceName = _context.Location.Where(p=> p.Id == result.)
+                return _mapper.Map<List<Locations>>(_context.Location.ToList());
             }
-
             catch (Exception ex)
             {
-                return new List<RideDetails>();
+                return new List<Locations>();
             }
         }
 

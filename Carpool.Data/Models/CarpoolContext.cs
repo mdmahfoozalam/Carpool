@@ -23,8 +23,11 @@ public partial class CarpoolContext : DbContext
     public virtual DbSet<Vehicle> Vehicle { get; set;  }
 
     public virtual DbSet<Booking> Booking { get; set; }
+    public virtual DbSet<Bookings> Bookings { get; set; }
 
     public virtual DbSet<Ride> Ride { get; set; } 
+
+    public virtual DbSet<Ride1> Ride1 { get; set; }
     
     public virtual DbSet<Location> Location { get; set; }
     

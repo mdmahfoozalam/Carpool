@@ -2,6 +2,7 @@
 using Carpool.Data.Models;
 using Carpool.Models.Book;
 using Carpool.Models.Ride;
+using Carpool.Models.User;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Carpool.AutoMapper
@@ -10,8 +11,10 @@ namespace Carpool.AutoMapper
     {
         public MapperProfile()
         {
+            CreateMap<Location, Locations>();
             CreateMap<Ride,RideDetails>();
-            CreateMap<Booking, BookingDetails>();
+            CreateMap<User, UserViewModel>();
+            //CreateMap<Booking, BookingDetails>();
         }
         
     }

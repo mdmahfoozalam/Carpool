@@ -1,6 +1,8 @@
-﻿using Carpool.Models.Book;
+﻿using Carpool.Data.Models;
+using Carpool.Models.Book;
 using Carpool.Models.Ride;
 using Carpool.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +10,7 @@ namespace Carpool.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BookController 
     {
         private readonly IBookService _bookService;
@@ -22,9 +25,9 @@ namespace Carpool.Controllers
         }
 
         [HttpGet("getBookedRide")]
-        public IEnumerable<BookingDetails> BookedRide(int userId)
+        public IEnumerable<Bookings> GetBookedRide(int userId)
         {
-            return _bookService.BookedRide(userId);
+            return _bookService.GetBookedRide(userId);
         }
 
     }

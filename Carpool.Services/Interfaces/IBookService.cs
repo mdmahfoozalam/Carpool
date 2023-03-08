@@ -16,6 +16,6 @@ namespace Carpool.Services.Interfaces
 
         public string BookRide(int rideId, int userId);
 
-        public IEnumerable<BookingDetails> BookedRide(int userId);
+        public IEnumerable<Bookings> GetBookedRide(int userId);
     }
 }
