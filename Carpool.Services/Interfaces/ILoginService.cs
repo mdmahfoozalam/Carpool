@@ -1,4 +1,5 @@
-﻿using Carpool.Models.User;
+﻿using Carpool.Models.Common;
+using Carpool.Models.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace Carpool.Services.Interfaces
 {
     public interface ILoginService
     {
-        public object Login(string email, string password);
+        public ApiResponse<string> Login(string email, string password);
 
-        public object SignUp(UserDetails userDetails);
+        public ApiResponse<string> SignUp(UserDetails userDetails);
     }
 }

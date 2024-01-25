@@ -1,5 +1,6 @@
 ﻿using Carpool.Data.Models;
 using Carpool.Models.Book;
+using Carpool.Models.Common;
 using Carpool.Models.Ride;
 using Carpool.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -19,13 +20,13 @@ namespace Carpool.Controllers
         }
 
         [HttpGet("bookRide")]
-        public string BookRide(int rideId, int userId)
+        public ApiResponse<string> BookRide(int rideId, int userId)
         {
            return _bookService.BookRide(rideId, userId);
         }
 
         [HttpGet("getBookedRide")]
-        public IEnumerable<Bookings> GetBookedRide(int userId)
+        public ApiResponse<List<Bookings>> GetBookedRide(int userId)
         {
             return _bookService.GetBookedRide(userId);
         }

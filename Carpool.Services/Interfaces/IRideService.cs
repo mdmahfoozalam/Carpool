@@ -1,4 +1,5 @@
-﻿using Carpool.Models.Ride;
+﻿using Carpool.Models.Common;
+using Carpool.Models.Ride;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
@@ -10,15 +11,14 @@ namespace Carpool.Services.Interfaces
 {
     public interface IRideService
     {
-        public IEnumerable<RideDetails> GetAllRides();
+        public ApiResponse<List<RideDetails>> GetAllRides();
 
-        public IEnumerable<Locations> GetLocations();
-        public IEnumerable<RideResponse> GetRides(int userId);
-       // public string UpdateRide(RideDetails rideDetails);
-
+        public ApiResponse<List<Locations>> GetLocations();
+        public ApiResponse<List<RideResponse>> GetRides(int userId);
+       
         //public string UpdateOfferPartial(int offerId, JsonPatchDocument updateOfferModel);
 
-        public IEnumerable<RideResponse> GetAvailableRides(RideRequest rideRequestModel, int pricePerKm);
+        public ApiResponse<List<RideResponse>> GetAvailableRides(RideRequest rideRequestModel, int pricePerKm);
 
         public object AddRide(RideDetails rideDetails);
     }

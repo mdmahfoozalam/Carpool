@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Carpool.Data.Models;
+using Carpool.Models.Common;
 using Carpool.Models.Ride;
 using Carpool.Services.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
@@ -24,16 +25,39 @@ namespace Carpool.Services
             _context = context;
         }
 
-        public IEnumerable<RideDetails> GetAllRides()
+
+        public ApiResponse<List<RideDetails>> GetAllRides()
         {
             try
             {
-                return _mapper.Map<IEnumerable<RideDetails>>(_context.Ride);
+                var res = new List<RideDetails>();
+                var result = new ApiResponse<List<RideDetails>>();
+                //return _mapper.Map<IEnumerable<RideDetails>>(_context.Ride);
+                var allRides = _context.Ride.ToList();
+                foreach (var r in allRides)
+                {
+                    res.Add(new RideDetails()
+                    {
+                        RideId = r.RideId,
+                        UserId = r.UserId,
+                        Source = _context.Location.FirstOrDefault(x => x.Id == r.SourceId).Name,
+                        Destination = _context.Location.FirstOrDefault(x => x.Id == r.DestinationId).Name,
+                        Date = r.Date,
+                        Time = r.Time
+
+                    });
+                }
+                result.Data = res;
+                result.IsSuccess = true;
+                return result;
             }
 
             catch (Exception ex)
             {
-                return new List<RideDetails>();
+                return new ApiResponse<List<RideDetails>>() {
+                    IsSuccess = false,
+                    Message= ex.Message
+                };
             }
 
         }
@@ -45,9 +69,6 @@ namespace Carpool.Services
 
                 var sourceId = _context.Location.Where(x => x.Name == rideDetails.Source).Select(x => x.Id).FirstOrDefault();
                 var destinationId = _context.Location.Where(x => x.Name == rideDetails.Destination).Select(x => x.Id).FirstOrDefault();
-                //var ride = _context.Ride.Where(f =>f.UserId == rideDetails.UserId && f.SourceId == rideDetails.SourceId
-                //                                && f.DestinationId == rideDetails.DestinationId && f.Date == rideDetails.Date
-                //                                && f.Time == rideDetails.Time && f.Distance == rideDetails.Distance).ToList();
               
                     _context.Ride.Add(new Ride()
                     {
@@ -132,10 +153,11 @@ namespace Carpool.Services
 
         //}
 
-        public IEnumerable<RideResponse> GetAvailableRides(RideRequest rideRequest,int pricePerKm)
+        public ApiResponse<List<RideResponse>> GetAvailableRides(RideRequest rideRequest,int pricePerKm)
         {
             try
             {
+                var result = new ApiResponse<List<RideResponse>>();
                 List<RideResponse> rides = new();
                 int sourceId = _context.Location.Where(f => f.Name == rideRequest.Source).Select(u=>u.Id).FirstOrDefault();
                 int destinationId = _context.Location.Where(f => f.Name == rideRequest.Destination).Select(u => u.Id).FirstOrDefault();
@@ -158,10 +180,10 @@ namespace Carpool.Services
                                Distance = r.Distance
 
                            }).ToList();
-                var result = res.Where(f =>f.sourceId==sourceId && f.DestinationId == destinationId 
+                var rideResponse = res.Where(f =>f.sourceId==sourceId && f.DestinationId == destinationId 
                                 && f.Date == rideRequest.Date && f.Time == rideRequest.Time && f.IsBooked ==false).ToList();
 
-                foreach(var r in result)
+                foreach(var r in rideResponse)
                 {
                     rides.Add(new RideResponse()
                     {
@@ -175,11 +197,17 @@ namespace Carpool.Services
                         Time = r.Time,
                     });
                 }
-                return rides;
+                result.Data = rides;
+                result.IsSuccess =true;
+                return result;
             }
             catch (Exception ex)
             {
-                return new List<RideResponse>();
+                return new ApiResponse<List<RideResponse>>()
+                {
+                    IsSuccess= false,
+                    Message= ex.Message
+                };
             }
         }
 
@@ -211,10 +239,11 @@ namespace Carpool.Services
         //    }
         //}
 
-        public IEnumerable<RideResponse> GetRides(int userId)
+        public ApiResponse<List<RideResponse>> GetRides(int userId)
         {
             try
             {
+                var apiResponse = new ApiResponse<List<RideResponse>>();
                 var res = new List<RideResponse>();
                 //return  _mapper.Map<List<RideDetails>>(_context.Ride.Where(_ => _.UserId == userId).ToList());
                 var ridesWithId =_context.Ride.Where(_ => _.UserId == userId).ToList();
@@ -232,25 +261,42 @@ namespace Carpool.Services
                         SeatAvailable = _context.Vehicle.Where(s => s.UserId== userId).Select(x => x.Seats).FirstOrDefault(),
                     });
                 }
+                apiResponse.Data = res;
+                apiResponse.IsSuccess= true;
 
-                return res;
+                return apiResponse;
             }
 
             catch (Exception ex)
             {
-                return new List<RideResponse>();
+                return new ApiResponse<List<RideResponse>>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                };
             }
         }
 
-        public IEnumerable<Locations> GetLocations()
+        public ApiResponse<List<Locations>> GetLocations()
         {
             try
             {
-                return _mapper.Map<List<Locations>>(_context.Location.ToList());
+                var result = new ApiResponse<List<Locations>>();
+                var location = _context.Location.ToList();
+                if (location != null)
+                {
+                    result.Data = _mapper.Map<List<Locations>>(location);
+                    result.IsSuccess = true;
+                }
+                return result;
             }
             catch (Exception ex)
             {
-                return new List<Locations>();
+                return new ApiResponse<List<Locations>>()
+                {
+                    IsSuccess= false,
+                    Message= ex.Message
+                };
             }
         }
 

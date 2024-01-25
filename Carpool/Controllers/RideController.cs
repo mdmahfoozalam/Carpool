@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Carpool.Models.Ride;
 using Carpool.Services;
 using Microsoft.AspNetCore.Authorization;
+using Carpool.Models.Common;
 
 namespace Carpool.Controllers
 {
@@ -20,14 +21,15 @@ namespace Carpool.Controllers
             _offerService = offerService;
         }
 
+
         [HttpGet("getAllOfferedRide")]
-        public IEnumerable<RideDetails> GetAllRides()
+        public ApiResponse<List<RideDetails>> GetAllRides()
         {
             return _offerService.GetAllRides();
         }
 
         [HttpGet("getOfferedRide")]
-        public IEnumerable<RideResponse> GetRides(int userId)
+        public ApiResponse<List<RideResponse>> GetRides(int userId)
         {
             return _offerService.GetRides(userId);
         }
@@ -47,13 +49,13 @@ namespace Carpool.Controllers
 
 
         [HttpPost("getAvailableRides")]
-        public IEnumerable<RideResponse> GetAvailabeRides(RideRequest rideRequest, int pricePerKm)
+        public ApiResponse<List<RideResponse>> GetAvailabeRides(RideRequest rideRequest, int pricePerKm)
         {
             return _offerService.GetAvailableRides(rideRequest, pricePerKm);
         }
 
         [HttpGet("getAllLocations")]
-        public IEnumerable<Locations> GetAllLocations()
+        public ApiResponse<List<Locations>> GetAllLocations()
         {
             return _offerService.GetLocations();
         }

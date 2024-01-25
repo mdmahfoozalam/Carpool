@@ -1,4 +1,5 @@
-﻿using Carpool.Models.User;
+﻿using Carpool.Models.Common;
+using Carpool.Models.User;
 using Carpool.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +19,7 @@ namespace Carpool.Controllers
         }
 
         [HttpGet("login")]
-        public object Login(string email, string password) 
+        public ApiResponse<string> Login(string email, string password) 
         {
             return _loginService.Login(email, password);
         }

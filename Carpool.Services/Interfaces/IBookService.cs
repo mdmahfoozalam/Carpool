@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Carpool.Models.Ride;
 using Carpool.Models.Book;
+using Carpool.Models.Common;
 
 namespace Carpool.Services.Interfaces
 {
@@ -14,8 +15,8 @@ namespace Carpool.Services.Interfaces
     {
         
 
-        public string BookRide(int rideId, int userId);
+        public ApiResponse<string> BookRide(int rideId, int userId);
 
-        public IEnumerable<Bookings> GetBookedRide(int userId);
+        public ApiResponse<List<Bookings>> GetBookedRide(int userId);
     }
 }

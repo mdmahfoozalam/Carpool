@@ -1,4 +1,5 @@
 ﻿using Carpool.Data.Models;
+using Carpool.Models.Common;
 using Carpool.Models.User;
 using Carpool.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -22,36 +23,43 @@ namespace Carpool.Services
             _context= context;
             _config = config;
         }
-        public object Login(string email, string password)
+        public ApiResponse<string> Login(string email, string password)
         {
             try
             {
+                var apiResponse = new ApiResponse<string>();
                 var mail= _context.User.FirstOrDefault(f => f.Email == email);
                 if(mail != null && mail.Password == password)
                 {
                     var token = GenerateToken(email);
-                    return new
-                    {
-                        token = token
-                    };
+                    apiResponse.Data = token;
+                    apiResponse.IsSuccess = true;
+                    return apiResponse;
                 }
                 else
                 {
-                    return new {message = "user does not exist"};
+                    apiResponse.IsSuccess = true;
+                    apiResponse.Message = "user does not exist";
+                    return apiResponse;
                 }
             }
 
             catch(Exception ex) 
             {
-                return ex.Message;
+                return new ApiResponse<string>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
             }
             
         }
 
-        public object SignUp(UserDetails userDetails)
+        public ApiResponse<string> SignUp(UserDetails userDetails)
         {
             try
             {
+                var apiResponse = new ApiResponse<string>();
                 var mail = _context.User.Where(f=> f.Email == userDetails.Email).FirstOrDefault();
                 if (mail == null)
                 {
@@ -63,17 +71,25 @@ namespace Carpool.Services
                     });
 
                     _context.SaveChanges();
-                    return new {message = "Registered Successfully with carpool"};
+                    apiResponse.IsSuccess= true;
+                    apiResponse.Message = "Registered Successfully with carpool";
+                    return apiResponse;
                 }
                 else
                 {
-                    return new { message = "Email Id registered already" };
+                    apiResponse.IsSuccess = true;
+                    apiResponse.Message = "Email Id registered already";
+                    return apiResponse;
                 }
                 
             }
             catch(Exception ex) 
             {
-               return ex.Message;
+               return new ApiResponse<string>()
+               {
+                   IsSuccess = false,
+                   Message = ex.Message
+               };
             }
         }
 
@@ -88,7 +104,7 @@ namespace Carpool.Services
             };
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Isuer"],
+                issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims,
                 expires: DateTime.Now.AddDays(1),

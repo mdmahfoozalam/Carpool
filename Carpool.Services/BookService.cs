@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Carpool.Data.Models;
 using Carpool.Models.Book;
+using Carpool.Models.Common;
 using Carpool.Models.Ride;
 using Carpool.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -21,16 +22,23 @@ namespace Carpool.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<Bookings> GetBookedRide(int userId)
+        public ApiResponse<List<Bookings>> GetBookedRide(int userId)
         {
+            var apiResponse = new ApiResponse<List<Bookings>>();
             var response = _context.Bookings.Where(f => f.UserId == userId).ToList();
-            return response;
+            if(response !=null)
+            {
+                apiResponse.Data = response;
+                apiResponse.IsSuccess = true;
+            }
+            return apiResponse;
         }   
 
-        public string BookRide(int rideId, int userId )
+        public ApiResponse<string> BookRide(int rideId, int userId )
         {
             try
             {
+                var apiResponse = new ApiResponse<string>();
                 var ride = _context.Ride.FirstOrDefault(f => f.RideId == rideId);
                 if(ride != null)
                 {
@@ -70,18 +78,26 @@ namespace Carpool.Services
                         Seats =vehicle.Seats
                     });
                     _context.SaveChanges();
-                    return "Ride booked";
+                    apiResponse.IsSuccess = true;
+                    apiResponse.Message = "Ride Booked";
+                    return apiResponse;
                 }
                 
                 else
                 {
-                    return "No ride available";
+                    apiResponse.IsSuccess = true;
+                    apiResponse.Message = "No ride available";
+                    return apiResponse;
                 }   
                 
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return new ApiResponse<string>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                };
             }
             
         }
